@@ -1,4 +1,4 @@
-import { createElement } from '../render';
+import AbstractView from '../framework/view/abstract-view';
 import { DATE_FORMAT, EVENT_POINTS_TYPE } from '../const';
 import { humanizeEventDate, createUpperCase } from '../utils';
 
@@ -73,8 +73,8 @@ function createDestinationTemplate(destination) {
   }
 }
 
-function createEditingFormTemplate (points, offers, checkedOffers, destinations) {
-  const {type, dateFrom, dateTo, basePrice} = points;
+function createEditingFormTemplate (point, offers, checkedOffers, destinations) {
+  const {type, dateFrom, dateTo, basePrice} = point;
   const {name} = destinations;
   return `
   <form class="event event--edit" action="#" method="post">
@@ -134,26 +134,37 @@ function createEditingFormTemplate (points, offers, checkedOffers, destinations)
   `;
 }
 
-export default class FormEditView {
-  constructor({points, offers, checkedOffers, destinations}) {
-    this.points = points;
-    this.offers = offers;
-    this.checkedOffers = checkedOffers;
-    this.destinations = destinations;
+export default class FormEditView extends AbstractView {
+  #point = null;
+  #offers = null;
+  #checkedOffers = null;
+  #destinations = null;
+  #handleFormSubmit = null;
+  #handleEditClick = null;
+
+  constructor({point, offers, checkedOffers, destinations, onFormSubmit, onEditClick}) {
+    super();
+    this.#point = point;
+    this.#offers = offers;
+    this.#checkedOffers = checkedOffers;
+    this.#destinations = destinations;
+    this.#handleEditClick = onEditClick;
+    this.#handleFormSubmit = onFormSubmit;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formSubmitHandler);
   }
 
-  getTemplate () {
-    return createEditingFormTemplate(this.points, this.offers, this.checkedOffers, this.destinations);
+  get template () {
+    return createEditingFormTemplate(this.#point, this.#offers, this.#checkedOffers, this.#destinations);
   }
 
-  getElement () {
-    if(!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
-  }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 
-  removeElement () {
-    this.element = null;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }

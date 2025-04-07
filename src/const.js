@@ -16,4 +16,4 @@ export const DATE_FORMAT = {
   hours: 'hh:mm'
 };
 
-export const EVENT_POINTS_COUNT = 4;
+export const EVENT_POINTS_COUNT = 10;
