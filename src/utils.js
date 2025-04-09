@@ -1,9 +1,5 @@
 import dayjs from 'dayjs';
 
-export function getRandomArrayElement (items) {
-  return items [Math.floor(Math.random() * items.length)];
-}
-
 export function humanizeEventDate(date, format) {
   return (date) ? dayjs(date).format(format) : '';
 }
@@ -18,8 +14,8 @@ export function getTimeGap(dateFrom, dateTo) {
   const durationInHours = dayjs(dateTo).diff(dateFrom, 'hour');
 
   if (durationInHours < 24) {
-    const durationMinute = durationInMinutes % 60;
-    return `${durationInHours}H ${durationMinute}M`;
+    const durationMinutes = durationInMinutes % 60;
+    return `${durationInHours}H ${durationMinutes}M`;
   }
 
   const durationInDays = dayjs(dateTo).diff(dateFrom, 'day');
@@ -27,6 +23,10 @@ export function getTimeGap(dateFrom, dateTo) {
   const minutes = durationInMinutes % 60;
 
   return `${durationInDays}D ${hours}H ${minutes}M`;
+}
+
+export function getRandomArrayElement(items) {
+  return items[Math.floor(Math.random() * items.length)];
 }
 
 export function createUpperCase(word) {

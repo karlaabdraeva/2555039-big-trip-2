@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view';
 
-function createFormCreatingTemplate() {
+function createFormTemplate() {
   return (`
     <form class="event event--edit" action="#" method="post">
                 <header class="event__header">
@@ -167,6 +167,6 @@ function createFormCreatingTemplate() {
 export default class FormCreatingView extends AbstractView {
 
   get template () {
-    return createFormCreatingTemplate();
+    return createFormTemplate();
   }
 }

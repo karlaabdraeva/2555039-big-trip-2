@@ -11,7 +11,7 @@ function createTypeTemplate(type) {
   );
 }
 
-function createOfferTemplate(offers,checkedOffers) {
+function createOfferTemplate(offers, checkedOffers) {
   const {id, title, price} = offers;
   const isChecked = checkedOffers.map((item) => item.id).includes(id) ? 'checked' : '';
   return (
@@ -73,7 +73,7 @@ function createDestinationTemplate(destination) {
   }
 }
 
-function createEditingFormTemplate (point, offers, checkedOffers, destinations) {
+function createFormEditTemplate (point, offers, checkedOffers, destinations) {
   const {type, dateFrom, dateTo, basePrice} = point;
   const {name} = destinations;
   return `
@@ -151,11 +151,12 @@ export default class FormEditView extends AbstractView {
     this.#handleEditClick = onEditClick;
     this.#handleFormSubmit = onFormSubmit;
 
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formSubmitHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+    this.element.addEventListener('submit', this.#formSubmitHandler);
   }
 
   get template () {
-    return createEditingFormTemplate(this.#point, this.#offers, this.#checkedOffers, this.#destinations);
+    return createFormEditTemplate(this.#point, this.#offers, this.#checkedOffers, this.#destinations);
   }
 
   #formSubmitHandler = (evt) => {

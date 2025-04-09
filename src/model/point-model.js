@@ -16,7 +16,7 @@ export default class PointModel {
     return this.#offers;
   }
 
-  get destinations () {
+  get destinations() {
     return this.#destinations;
   }
 
@@ -24,7 +24,7 @@ export default class PointModel {
     return this.#offers.find((offer) => offer.type === type) || { type, offers: [] };
   }
 
-  getOffersById(type, offersId) {
+  getOffersById(type, offersId = []) {
     const offersType = this.getOffersByType(type);
     if(!offersType || !offersType.offers || offersId.length === 0){
       return [];
@@ -32,7 +32,7 @@ export default class PointModel {
     return offersType.offers.filter((item) => offersId.includes(item.id));
   }
 
-  getDestinationsById(id) {
+  getDestinationById(id) {
     return this.#destinations.find((destination) => destination.id === id) || null;
   }
 }
