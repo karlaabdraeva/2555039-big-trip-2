@@ -24,11 +24,3 @@ export function getTimeGap(dateFrom, dateTo) {
 
   return `${durationInDays}D ${hours}H ${minutes}M`;
 }
-
-export function getRandomArrayElement(items) {
-  return items[Math.floor(Math.random() * items.length)];
-}
-
-export function createUpperCase(word) {
-  return (`${word[0].toUpperCase()}${word.slice(1)}`);
-}

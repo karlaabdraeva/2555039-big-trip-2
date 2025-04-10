@@ -1,6 +1,7 @@
 import AbstractView from '../framework/view/abstract-view';
 import { DATE_FORMAT, EVENT_POINTS_TYPE } from '../const';
-import { humanizeEventDate, createUpperCase } from '../utils';
+import { humanizeEventDate } from '../utils/date';
+import { createUpperCase } from '../utils/common';
 
 function createTypeTemplate(type) {
   return (

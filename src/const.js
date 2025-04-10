@@ -17,3 +17,23 @@ export const DATE_FORMAT = {
 };
 
 export const EVENT_POINTS_COUNT = 10;
+
+export const FILTER_TYPES = ['everything', 'future', 'present', 'past'];
+export const SORT_TYPES = ['day', 'event', 'time', 'price', 'offers'];
+
+export const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past',
+};
+
+export const SortType = {
+  DAY: 'day',
+  EVENT: 'event',
+  TYPE: 'type',
+  TIME: 'time',
+  PRICE: 'price',
+};
+
+export const DATE_NOW = new Date().toISOString();

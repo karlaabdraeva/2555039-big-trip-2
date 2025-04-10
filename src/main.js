@@ -1,6 +1,7 @@
 import PointModel from './model/point-model.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import HeaderPresenter from './presenter/header-presenter.js';
+import { generateFilters } from './utils/filter.js';
 
 const siteHeaderElement = document.querySelector('.page-header');
 const tripMainElement = siteHeaderElement.querySelector('.trip-main');
@@ -14,10 +15,14 @@ const boardPresenter = new BoardPresenter({
   pointModel: pointModel
 });
 
+const filters = generateFilters(pointModel.points);
+
 const headerPresenter = new HeaderPresenter({
   tripMainElement,
   filtersElement,
-  onNewEventClick: () => boardPresenter.createNewEvent()
+  filters,
+  onNewEventClick: () => boardPresenter.createNewEvent(),
+  onFilterTypeChange: () => {}
 });
 
 boardPresenter.init();

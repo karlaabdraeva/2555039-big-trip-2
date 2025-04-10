@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view';
 import { DATE_FORMAT } from '../const';
-import { getTimeGap, humanizeEventDate } from '../utils';
+import { getTimeGap, humanizeEventDate } from '../utils/date';
 
 function createOfferTemplate({title, price}) {
   return (
