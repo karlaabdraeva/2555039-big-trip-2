@@ -1,13 +1,13 @@
 export const EVENT_POINTS_TYPE = [
-  'taxi',
-  'bus',
-  'train',
-  'ship',
-  'drive',
-  'flight',
-  'check-in',
-  'sightseeing',
-  'restaurant'
+  'Taxi',
+  'Bus',
+  'Train',
+  'Ship',
+  'Drive',
+  'Flight',
+  'Check-in',
+  'Sightseeing',
+  'Restaurant',
 ];
 
 export const DATE_FORMAT = {
@@ -16,4 +16,4 @@ export const DATE_FORMAT = {
   hours: 'hh:mm'
 };
 
-export const EVENT_POINTS_COUNT = 4;
+export const EVENT_POINTS_COUNT = 10;
