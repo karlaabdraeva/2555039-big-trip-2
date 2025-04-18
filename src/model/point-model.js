@@ -33,6 +33,6 @@ export default class PointModel {
   }
 
   getDestinationById(id) {
-    return this.#destinations.find((destination) => destination.id === id) || null;
+    return this.#destinations.find((destination) => destination.id === Number(id)) || null;
   }
 }

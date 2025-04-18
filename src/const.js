@@ -37,3 +37,10 @@ export const SortType = {
 };
 
 export const DATE_NOW = new Date().toISOString();
+
+export const NoEventsMessage = {
+  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterType.PAST]: 'There are no past events now',
+  [FilterType.PRESENT]: 'There are no present events now',
+  [FilterType.FUTURE]: 'There are no future events now'
+};

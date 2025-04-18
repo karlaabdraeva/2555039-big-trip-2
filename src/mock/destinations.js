@@ -1,6 +1,6 @@
 const destinations = [
   {
-    id: '1',
+    id: 1,
     description: 'Chamonix, is a beautiful city, a true asian pearl, with crowded streets.',
     name: 'Chamonix',
     pictures: [
@@ -11,7 +11,7 @@ const destinations = [
     ]
   },
   {
-    id: '2',
+    id: 2,
     description: 'New York City is a metropolis that has long been a center of culture, commerce, and innovation.',
     name: 'New York City',
     pictures: [
@@ -22,7 +22,7 @@ const destinations = [
     ]
   },
   {
-    id: '3',
+    id: 3,
     description: 'Paris, is a beautiful city, a true asian pearl, with crowded streets.',
     name: 'Paris',
     pictures: [
@@ -37,7 +37,7 @@ const destinations = [
     ]
   },
   {
-    id: '4',
+    id: 4,
     description: 'Geneva is the second most populous city in Switzerland.',
     name: 'Geneva',
     pictures: [

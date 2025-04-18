@@ -1,34 +1,41 @@
 import NoPointView from '../view/no-point-view.js';
+import FormCreatingView from '../view/form-creating-view.js';
 import SortView from '../view/sort-view.js';
 import EventListView from '../view/event-list-view.js';
-import FormEditView from '../view/edit-view.js';
+import FormEditPointView from '../view/form-edit-point-view.js';
 import PointView from '../view/point-view.js';
-import FormCreatingView from '../view/form-creating-view.js';
 import { render, replace, RenderPosition } from '../framework/render.js';
 
 export default class BoardPresenter {
   #container = null;
   #pointModel = null;
+  #filterModel = null;
   #noPointComponent = null;
   #sortComponent = new SortView();
   #eventListComponent = new EventListView();
-  #eventCreateComponent = new FormCreatingView();
 
-  #eventPoints = [];
-
-  constructor({ container, pointModel }) {
+  constructor({ container, pointModel, filterModel }) {
     this.#container = container;
     this.#pointModel = pointModel;
+    this.#filterModel = filterModel;
   }
 
   init() {
-    this.#eventPoints = [...this.#pointModel.points];
-    this.render();
+    this.#renderBoard();
   }
 
-  render() {
-    if (this.#eventPoints.length === 0) {
-      this.#noPointComponent = new NoPointView();
+  #getPoints() {
+    const currentFilter = this.#filterModel.getCurrentFilter();
+    const allPoints = [...this.#pointModel.points];
+    const filterFn = this.#filterModel.filterFn; // если есть функция фильтрации в модели
+    return filterFn ? filterFn(currentFilter, allPoints) : allPoints;
+  }
+
+  #renderBoard() {
+    const points = this.#getPoints();
+
+    if (points.length === 0) {
+      this.#noPointComponent = new NoPointView(this.#filterModel.getCurrentFilter()); // передаём активный фильтр
       render(this.#noPointComponent, this.#container);
       return;
     }
@@ -36,12 +43,18 @@ export default class BoardPresenter {
     render(this.#sortComponent, this.#container);
     render(this.#eventListComponent, this.#container);
 
-    for (let i = 1; i < this.#eventPoints.length; i++) {
-      this.#renderEventPoint(this.#eventPoints[i]);
+    for (const point of points) {
+      this.#renderEventPoint(point);
     }
   }
 
   #renderEventPoint(point) {
+    const destination = this.#pointModel.getDestinationById(point.destination);
+
+    if (!destination) {
+      return;
+    }
+
     const escKeyDownHandler = (evt) => {
       if (evt.key === 'Escape') {
         evt.preventDefault();
@@ -51,20 +64,20 @@ export default class BoardPresenter {
     };
 
     const eventPointComponent = new PointView({
-      point: point,
+      point,
       offers: this.#pointModel.getOffersById(point.type, point.offers),
-      destinations: this.#pointModel.getDestinationById(point.destination),
+      destinations: destination,
       onEditClick: () => {
         replacePointToForm();
         document.addEventListener('keydown', escKeyDownHandler);
       }
     });
 
-    const eventEditFormComponent = new FormEditView({
-      point: point,
+    const eventEditFormComponent = new FormEditPointView({
+      point,
       offers: this.#pointModel.getOffersByType(point.type),
       checkedOffers: this.#pointModel.getOffersById(point.type, point.offers),
-      destinations: this.#pointModel.getDestinationById(point.destination),
+      destinations: destination,
       onFormSubmit: () => {
         replaceFormToPoint();
         document.removeEventListener('keydown', escKeyDownHandler);
@@ -95,6 +108,34 @@ export default class BoardPresenter {
       render(this.#eventListComponent, this.#container);
     }
 
-    render(this.#eventCreateComponent, this.#eventListComponent.element, RenderPosition.AFTERBEGIN);
+    const newPoint = {
+      type: 'flight',
+      destination: 1,
+      dateFrom: new Date().toISOString(),
+      dateTo: new Date().toISOString(),
+      offers: [],
+      basePrice: 0,
+    };
+
+    const destination = this.#pointModel.getDestinationById(newPoint.destination) || {
+      name: '',
+      description: '',
+      pictures: []
+    };
+
+    const offers = this.#pointModel.getOffersByType(newPoint.type);
+
+    const eventCreateComponent = new FormCreatingView({
+      point: newPoint,
+      offers,
+      destination,
+      onFormSubmit: () => {
+        // логика сохранения
+      }
+    });
+
+    render(eventCreateComponent, this.#eventListComponent.element, RenderPosition.AFTERBEGIN);
   }
 }
+
+
