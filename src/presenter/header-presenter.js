@@ -1,16 +1,19 @@
 import TripInfoView from '../view/trip-info-view.js';
 import FilterView from '../view/filter-view.js';
 import NewEventButtonView from '../view/new-event-button-view.js';
-import { render, RenderPosition } from '../framework/render.js';
+import { render, RenderPosition, replace } from '../framework/render.js';
 import { generateFilters } from '../utils/filter.js';
 
 export default class HeaderPresenter {
   #tripMainElement = null;
   #filtersElement = null;
+
   #onNewEventClick = null;
   #filterModel = null;
   #pointModel = null;
+
   #filterComponent = null;
+  #tripInfoComponent = null;
 
   constructor({ tripMainElement, filtersElement, onNewEventClick, filterModel, pointModel }) {
     this.#tripMainElement = tripMainElement;
@@ -21,22 +24,25 @@ export default class HeaderPresenter {
   }
 
   init() {
-    render(new TripInfoView(), this.#tripMainElement, RenderPosition.AFTERBEGIN);
-
-    // устанавливаем обработчик изменений
+    // Подписка на изменение фильтра
     this.#filterModel.setOnChange(this.#handleFilterModelChange);
 
-    this.#renderFilterView();
+    // Рендерим всю шапку
+    this.#renderTripInfo();
+    this.#renderFilters();
     this.#renderNewEventButton();
   }
 
-  #renderFilterView() {
-    if (this.#filterComponent) {
-      this.#filterComponent.element.remove();
-      this.#filterComponent = null;
-    }
+  #renderTripInfo() {
+    // Рендер TripInfo
+    this.#tripInfoComponent = new TripInfoView();
+    render(this.#tripInfoComponent, this.#tripMainElement, RenderPosition.AFTERBEGIN);
+  }
 
+  #renderFilters() {
     const filters = generateFilters(this.#pointModel.points);
+
+    const prevFilterComponent = this.#filterComponent;
 
     this.#filterComponent = new FilterView({
       filters,
@@ -45,7 +51,12 @@ export default class HeaderPresenter {
       }
     });
 
-    render(this.#filterComponent, this.#filtersElement);
+    if (prevFilterComponent === null) {
+      render(this.#filterComponent, this.#filtersElement);
+      return;
+    }
+
+    replace(this.#filterComponent, prevFilterComponent);
   }
 
   #renderNewEventButton() {
@@ -56,8 +67,8 @@ export default class HeaderPresenter {
     render(newEventButtonComponent, this.#tripMainElement, RenderPosition.BEFOREEND);
   }
 
+  // Обработчик для обновления фильтров при изменении модели
   #handleFilterModelChange = () => {
-    this.#renderFilterView();
+    this.#renderFilters();
   };
 }
-

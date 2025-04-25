@@ -153,16 +153,18 @@ export default class FormEditPointView extends AbstractView {
     this.#destinations = destinations;
     this.#handleEditClick = onEditClick;
     this.#handleFormSubmit = onFormSubmit;
-
-    this.#registerHandlers();
   }
 
   get template() {
     return createFormEditTemplate(this.#point, this.#offers, this.#checkedOffers, this.#destinations);
   }
 
-  #registerHandlers() {
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+  setHandlers() {
+    const rollupBtn = this.element.querySelector('.event__rollup-btn');
+    if (rollupBtn) {
+      rollupBtn.addEventListener('click', this.#editClickHandler);
+    }
+
     this.element.addEventListener('submit', this.#formSubmitHandler);
   }
 

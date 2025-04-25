@@ -1,6 +1,4 @@
-import {getRandomArrayElement} from '../utils/common.js';
-
-const points = [
+export const eventPoints = [
   {
     id: '1',
     basePrice: 1100,
@@ -45,9 +43,3 @@ const points = [
     type: 'flight',
   },
 ];
-
-function getRandomPoint () {
-  return getRandomArrayElement(points);
-}
-
-export { getRandomPoint };

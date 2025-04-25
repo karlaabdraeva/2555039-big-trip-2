@@ -8,11 +8,11 @@ const tripMainElement = siteHeaderElement.querySelector('.trip-main');
 const filtersElement = document.querySelector('.trip-main__trip-controls');
 const siteMainElement = document.querySelector('.trip-events');
 
-// Модели
+// Создаём модели
 const pointModel = new PointModel();
 const filterModel = new FilterModel();
 
-// Презентеры
+// Создаём презентеры
 const boardPresenter = new BoardPresenter({
   container: siteMainElement,
   pointModel,
@@ -27,8 +27,7 @@ const headerPresenter = new HeaderPresenter({
   filterModel,
 });
 
-// Инициализация
-boardPresenter.init();
+// Инициализируем презентеры
 headerPresenter.init();
-
+boardPresenter.init();
 
