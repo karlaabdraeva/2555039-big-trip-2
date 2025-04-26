@@ -2,12 +2,12 @@ import AbstractView from '../framework/view/abstract-view';
 import { DATE_FORMAT } from '../const';
 import { getTimeGap, humanizeEventDate } from '../utils/date';
 
-function createOfferTemplate({title, price}) {
+function createOfferTemplate({ title, price }) {
   return (
     `<li class="event__offer">
-              <span class="event__offer-title">${title}</span>
-              &plus;&euro;&nbsp;
-              <span class="event__offer-price">${price}</span>
+      <span class="event__offer-title">${title}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${price}</span>
     </li>`
   );
 }
@@ -15,7 +15,8 @@ function createOfferTemplate({title, price}) {
 function createPointTemplate(point, offers, destinations) {
   const { type, dateFrom, dateTo, isFavorite, basePrice } = point;
   const { name = '' } = destinations || {};
-  return (`
+
+  return `
     <li class="trip-events__item">
       <div class="event">
         <time class="event__date" datetime="${dateFrom}">${humanizeEventDate(dateFrom, DATE_FORMAT.monthDay)}</time>
@@ -49,36 +50,52 @@ function createPointTemplate(point, offers, destinations) {
         </button>
       </div>
     </li>
-  `);
+  `;
 }
-
 
 export default class PointView extends AbstractView {
   #point = null;
   #offers = null;
   #destinations = null;
   #handleEditClick = null;
+  #handleFavoriteClick = null;
 
-  constructor({point, offers, destinations, onEditClick}) {
+  constructor({ point, offers, destinations, onEditClick, onFavoriteClick }) {
     super();
     this.#point = point;
     this.#offers = offers;
     this.#destinations = destinations;
     this.#handleEditClick = onEditClick;
-
-    this.#registerHandlers();
+    this.#handleFavoriteClick = onFavoriteClick;
   }
 
-  get template () {
+  get template() {
     return createPointTemplate(this.#point, this.#offers, this.#destinations);
   }
 
-  #registerHandlers() {
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+  // Вызывается вручную из презентера после render()
+  setHandlers() {
+    const rollupBtn = this.element.querySelector('.event__rollup-btn');
+
+    const favoriteBtn = this.element.querySelector('.event__favorite-btn');
+
+    if (rollupBtn) {
+      rollupBtn.addEventListener('click', this.#editClickHandler);
+    }
+
+    if (favoriteBtn) {
+      favoriteBtn.addEventListener('click', this.#favoriteClickHandler);
+    }
   }
 
   #editClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleEditClick();
   };
+
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFavoriteClick();
+  };
 }
+
