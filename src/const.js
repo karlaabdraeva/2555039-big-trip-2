@@ -35,6 +35,28 @@ export const SortType = {
   TIME: 'time',
   PRICE: 'price',
 };
+export const SORT_BUTTONS = [
+  {
+    sortType: 'day',
+    state: 'checked'
+  },
+  {
+    sortType: 'event',
+    state: 'disabled'
+  },
+  {
+    sortType: 'time',
+    state: ''
+  },
+  {
+    sortType: 'price',
+    state: ''
+  },
+  {
+    sortType: 'offer',
+    state: 'disabled'
+  }
+];
 
 export const DATE_NOW = new Date().toISOString();
 

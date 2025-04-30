@@ -24,3 +24,7 @@ export function getTimeGap(dateFrom, dateTo) {
 
   return `${durationInDays}D ${hours}H ${minutes}M`;
 }
+
+export function getEventDuration(event) {
+  return dayjs(event.dateTo).diff(dayjs(event.dateFrom));
+}
