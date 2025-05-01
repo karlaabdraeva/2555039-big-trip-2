@@ -4,6 +4,7 @@ import EventListView from '../view/event-list-view.js';
 import { render, remove, RenderPosition } from '../framework/render.js';
 import { filterEvents } from '../utils/filter.js';
 import { SortType } from '../const.js';
+import { sortByDate, sortByTime, sortByPrice } from '../utils/sort.js';
 import PointPresenter from './point-presenter.js';
 
 export default class BoardPresenter {
@@ -17,6 +18,8 @@ export default class BoardPresenter {
 
   #pointPresenters = new Map();
 
+  #currentSortType = SortType.DAY; // текущее состояние сортировки
+
   constructor({ container, pointModel, filterModel }) {
     this.#container = container;
     this.#pointModel = pointModel;
@@ -29,13 +32,22 @@ export default class BoardPresenter {
     this.#renderBoard();
   }
 
-  #getFilteredPoints() {
+  #getPoints() {
     const filterType = this.#filterModel.getCurrentFilter();
-    return filterEvents[filterType](this.#pointModel.points);
+    const filteredPoints = filterEvents[filterType](this.#pointModel.points);
+
+    switch (this.#currentSortType) {
+      case SortType.TIME:
+        return filteredPoints.sort(sortByTime);
+      case SortType.PRICE:
+        return filteredPoints.sort(sortByPrice);
+      default:
+        return filteredPoints.sort(sortByDate);
+    }
   }
 
   #renderBoard() {
-    const points = this.#getFilteredPoints();
+    const points = this.#getPoints();
 
     if (points.length === 0) {
       this.#renderNoPoints();
@@ -49,7 +61,7 @@ export default class BoardPresenter {
 
   #renderSort() {
     this.#sortComponent = new SortView({
-      currentSortType: SortType.DAY,
+      currentSortType: this.#currentSortType,
       onSortTypeChange: this.#handleSortTypeChange
     });
 
@@ -86,12 +98,7 @@ export default class BoardPresenter {
     this.#pointPresenters.clear();
   }
 
-  #handleModelChange = () => {
-    this.#clearBoard();
-    this.#renderBoard();
-  };
-
-  #clearBoard() {
+  #clearBoard({ resetSort = false } = {}) {
     this.#clearPoints();
 
     if (this.#sortComponent) {
@@ -105,9 +112,25 @@ export default class BoardPresenter {
     }
 
     remove(this.#eventListComponent);
+
+    if (resetSort) {
+      this.#currentSortType = SortType.DAY;
+    }
   }
 
-  #handleSortTypeChange = () => {
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return; // если сортировка та же — ничего не делать
+    }
+
+    this.#currentSortType = sortType;
+    this.#clearPoints();
+    this.#renderPoints(this.#getPoints());
+  };
+
+  #handleModelChange = () => {
+    this.#clearBoard({ resetSort: true });
+    this.#renderBoard();
   };
 
   #handleModeChange = () => {
@@ -121,12 +144,12 @@ export default class BoardPresenter {
 
     const presenter = this.#pointPresenters.get(updatedPoint.id);
     if (presenter) {
-      presenter.init(updatedPoint); // все данные он сам получит из модели
+      presenter.init(updatedPoint);
     }
   };
 
   createNewEvent() {
-    this.#handleModeChange(); // закрыть другие формы
+    this.#handleModeChange();
 
     const newPoint = {
       id: Date.now(), // временный ID
@@ -150,4 +173,3 @@ export default class BoardPresenter {
     this.#pointPresenters.set(newPoint.id, pointPresenter);
   }
 }
-
