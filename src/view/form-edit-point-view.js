@@ -2,6 +2,8 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { DATE_FORMAT, EVENT_POINTS_TYPE } from '../const.js';
 import { humanizeEventDate } from '../utils/date.js';
 import { createUpperCase } from '../utils/common.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 function createFormEditPointTemplate(state) {
   const { type, dateFrom, dateTo, basePrice, destinationName, description, pictures, offers, checkedOffers } = state;
@@ -125,6 +127,7 @@ export default class FormEditPointView extends AbstractStatefulView {
     this.setEscKeyDownHandler(this._callback.esc);
     this._setTypeChangeHandler();
     this._setDestinationChangeHandler();
+    this._setDatePickers();
   }
 
   setFormSubmitHandler(callback) {
@@ -185,5 +188,37 @@ export default class FormEditPointView extends AbstractStatefulView {
       }
     });
   }
+
+  _setDatePickers(){
+    const [dateFromElement, dateToElement] = this.element.querySelectorAll('.event__input--time');
+    const flatPickerConfig = {
+      dateFormat: 'd/m/y H:i',
+      enableTime: true,
+      locale: { firstDayOfWeek: 1 },
+      'time_24hr': true,
+    };
+
+    this._datePickerFrom = flatpickr(dateFromElement, {
+      ...flatPickerConfig,
+      defaultDate: this._state.dateFrom,
+      onClose: this._handleDateFromChange,
+      maxDate: this._state.dateTo,
+    });
+
+    this._datePickerTo = flatpickr(dateToElement, {
+      ...flatPickerConfig,
+      defaultDate: this._state.dateTo,
+      onClose: this._handleDateToChange,
+      minDate: this._state.dateFrom,
+    });
+  }
+
+  _handleDateFromChange = ([userDate]) => {
+    this.updateElement({ dateFrom: userDate.toISOString() });
+  };
+
+  _handleDateToChange = ([userDate]) => {
+    this.updateElement({ dateTo: userDate.toISOString() });
+  };
 }
 
