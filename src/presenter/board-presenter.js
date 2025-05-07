@@ -148,6 +148,7 @@ export default class BoardPresenter {
     }
   };
 
+
   createNewEvent() {
     this.#handleModeChange();
 
