@@ -5,12 +5,12 @@ import { createUpperCase } from '../utils/common.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
-function createTypeTemplate(type, selectedType) {
-  return `
+function createTypeTemplate(type) {
+  return (`
     <div class="event__type-item">
-      <input id="event-type-${type}-1" class="event__type-input visually-hidden" type="radio" name="event-type" value="${type}" ${type === selectedType ? 'checked' : ''}>
+      <input id="event-type-${type}-1" class="event__type-input visually-hidden" type="radio" name="event-type" value="${type}">
       <label class="event__type-label event__type-label--${type}" for="event-type-${type}-1">${createUpperCase(type)}</label>
-    </div>`;
+    </div>`);
 }
 
 function createOfferTemplate(offer, checkedOffers) {
@@ -59,6 +59,7 @@ function createDestinationTemplate(description, pictures) {
 }
 
 function createDestinationOptions(destinations) {
+  console.log('destinations in template:', destinations);
   return destinations.map((item) => `<option value="${item.name}"></option>`).join('');
 }
 
@@ -75,20 +76,22 @@ function createFormEditPointTemplate(state) {
         <header class="event__header">
           <div class="event__type-wrapper">
             <label class="event__type event__type-btn" for="event-type-toggle-1">
+            <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
             </label>
             <input class="event__type-toggle visually-hidden" id="event-type-toggle-1" type="checkbox">
 
             <div class="event__type-list">
               <fieldset class="event__type-group">
-                ${EVENT_POINTS_TYPE.map((t) => createTypeTemplate(t, type)).join('')}
+               <legend class="visually-hidden">Event type</legend>
+                ${EVENT_POINTS_TYPE.map((item) => createTypeTemplate(item)).join('')}
               </fieldset>
             </div>
           </div>
 
           <div class="event__field-group event__field-group--destination">
-            <label class="event__label" for="event-destination-1">${createUpperCase(type)}</label>
-            <input class="event__input event__input--destination" id="event-destination-1" type="text" value="${destinationName}" list="destination-list-1">
+            <label class="event__label event__type-output" for="event-destination-1">${createUpperCase(type)}</label>
+            <input class="event__input event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationName}" list="destination-list-1">
             <datalist id="destination-list-1">
               ${createDestinationOptions(destinations)}
             </datalist>
@@ -112,7 +115,7 @@ function createFormEditPointTemplate(state) {
 
         <section class="event__details">
           ${createOffersListTemplate(offers, checkedOffers)}
-          ${createDestinationTemplate(description, pictures)}
+          ${createDestinationTemplate(description, pictures, destinations, destinationName)}
         </section>
       </form>
     </li>`;
