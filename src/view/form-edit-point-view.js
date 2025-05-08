@@ -59,7 +59,6 @@ function createDestinationTemplate(description, pictures) {
 }
 
 function createDestinationOptions(destinations) {
-  console.log('destinations in template:', destinations);
   return destinations.map((item) => `<option value="${item.name}"></option>`).join('');
 }
 
