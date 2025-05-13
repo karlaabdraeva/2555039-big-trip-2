@@ -26,6 +26,7 @@ export default class BoardPresenter {
     this.#filterModel = filterModel;
 
     this.#filterModel.setOnChange(this.#handleModelChange);
+    this.#pointModel.addObserver(this.#handleModelChange); // подписка на модель точек
   }
 
   init() {
@@ -34,7 +35,7 @@ export default class BoardPresenter {
 
   #getPoints() {
     const filterType = this.#filterModel.getCurrentFilter();
-    const filteredPoints = filterEvents[filterType](this.#pointModel.points);
+    const filteredPoints = filterEvents[filterType](this.#pointModel.getPoints());
 
     switch (this.#currentSortType) {
       case SortType.TIME:
@@ -138,9 +139,7 @@ export default class BoardPresenter {
   };
 
   #handlePointDataChange = (updatedPoint) => {
-    this.#pointModel.points = this.#pointModel.points.map((point) =>
-      point.id === updatedPoint.id ? updatedPoint : point
-    );
+    this.#pointModel.updatedPoint(updatedPoint); //обновление модели
 
     const presenter = this.#pointPresenters.get(updatedPoint.id);
     if (presenter) {
