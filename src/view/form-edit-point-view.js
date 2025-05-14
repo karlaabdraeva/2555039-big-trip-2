@@ -4,6 +4,7 @@ import { humanizeEventDate } from '../utils/date.js';
 import { createUpperCase } from '../utils/common.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import he from 'he';
 
 function createTypeTemplate(type) {
   return (`
@@ -46,10 +47,13 @@ function createDestinationTemplate(description, pictures) {
   if (!description && !pictures.length) {
     return '';
   }
+
+  const encodedDescription = he.encode(description);
+
   return `
     <section class="event__section event__section--destination">
       <h3 class="event__section-title event__section-title--destination">Destination</h3>
-      <p class="event__destination-description">${description}</p>
+      <p class="event__destination-description">${encodedDescription}</p>
       <div class="event__photos-container">
         <div class="event__photos-tape">
           ${pictures.map(createPhotoTemplate).join('')}
@@ -123,6 +127,8 @@ function createFormEditPointTemplate(state) {
 export default class FormEditPointView extends AbstractStatefulView {
   _offers = null;
   _destinations = null;
+  _dateFromPicker = null;
+  _dateToPicker = null;
   _callback = {};
 
   constructor({ point, offers, destinations, onFormSubmit, onResetClick, onRollupClick, onEsc }) {
@@ -141,7 +147,7 @@ export default class FormEditPointView extends AbstractStatefulView {
       destinationName: selectedDestination.name || '',
       description: selectedDestination.description || '',
       pictures: selectedDestination.pictures || [],
-      destinations: destinations
+      destinations
     };
 
     this._setState(this._initialState);
@@ -150,11 +156,24 @@ export default class FormEditPointView extends AbstractStatefulView {
     this._callback.resetButtonClick = onResetClick;
     this._callback.rollupButtonClick = onRollupClick;
     this._callback.esc = onEsc;
+
     this._restoreHandlers();
   }
 
   get template() {
     return createFormEditPointTemplate(this._state);
+  }
+
+  removeElement() {
+    super.removeElement();
+    if (this._dateFromPicker) {
+      this._dateFromPicker.destroy();
+      this._dateFromPicker = null;
+    }
+    if (this._dateToPicker) {
+      this._dateToPicker.destroy();
+      this._dateToPicker = null;
+    }
   }
 
   _restoreHandlers() {
@@ -229,6 +248,7 @@ export default class FormEditPointView extends AbstractStatefulView {
 
   _setDatePickers() {
     const [dateFromElement, dateToElement] = this.element.querySelectorAll('.event__input--time');
+
     const flatPickerConfig = {
       dateFormat: 'd/m/y H:i',
       enableTime: true,
