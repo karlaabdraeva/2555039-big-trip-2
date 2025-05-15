@@ -3,6 +3,7 @@ import FilterView from '../view/filter-view.js';
 import NewEventButtonView from '../view/new-event-button-view.js';
 import { render, RenderPosition, replace } from '../framework/render.js';
 import { generateFilters } from '../utils/filter.js';
+import { UpdateType } from '../const.js';
 
 export default class HeaderPresenter {
   #tripMainElement = null;
@@ -24,17 +25,14 @@ export default class HeaderPresenter {
   }
 
   init() {
-    // Подписка на изменение фильтра
-    this.#filterModel.setOnChange(this.#handleFilterModelChange);
+    this.#filterModel.addObserver(this.#handleFilterModelChange);
 
-    // Рендерим всю шапку
     this.#renderTripInfo();
     this.#renderFilters();
     this.#renderNewEventButton();
   }
 
   #renderTripInfo() {
-    // Рендер TripInfo
     this.#tripInfoComponent = new TripInfoView();
     render(this.#tripInfoComponent, this.#tripMainElement, RenderPosition.AFTERBEGIN);
   }
@@ -46,17 +44,17 @@ export default class HeaderPresenter {
 
     this.#filterComponent = new FilterView({
       filters,
+      currentFilter: this.#filterModel.getFilter(),
       onFilterTypeChange: (filterType) => {
-        this.#filterModel.setCurrentFilter(filterType);
+        this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
       }
     });
 
     if (prevFilterComponent === null) {
       render(this.#filterComponent, this.#filtersElement);
-      return;
+    } else {
+      replace(this.#filterComponent, prevFilterComponent);
     }
-
-    replace(this.#filterComponent, prevFilterComponent);
   }
 
   #renderNewEventButton() {
@@ -67,8 +65,8 @@ export default class HeaderPresenter {
     render(newEventButtonComponent, this.#tripMainElement, RenderPosition.BEFOREEND);
   }
 
-  // Обработчик для обновления фильтров при изменении модели
   #handleFilterModelChange = () => {
     this.#renderFilters();
   };
 }
+

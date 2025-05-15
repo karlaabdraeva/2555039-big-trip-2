@@ -1,23 +1,19 @@
-export default class FilterModel {
-  #currentFilter = 'everything';
-  #onChange = null;
+import Observable from '../framework/observable';
+import { FilterType } from '../const';
 
-  getCurrentFilter() {
+export default class FilterModel extends Observable {
+  #currentFilter = FilterType.EVERYTHING;
+
+  getFilter() {
     return this.#currentFilter;
   }
 
-  setOnChange(callback) {
-    this.#onChange = callback;
-  }
-
-  setCurrentFilter(filterType) {
-    if (this.#currentFilter === filterType) {
+  setFilter(updateType, newFilter) {
+    if (this.#currentFilter === newFilter) {
       return;
     }
 
-    this.#currentFilter = filterType;
-    if (this.#onChange) {
-      this.#onChange();
-    }
+    this.#currentFilter = newFilter;
+    this._notify(updateType);
   }
 }
