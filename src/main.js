@@ -1,34 +1,43 @@
 import PointModel from './model/point-model.js';
 import FilterModel from './model/filter-model.js';
 import BoardPresenter from './presenter/board-presenter.js';
-import HeaderPresenter from './presenter/header-presenter.js';
+import FilterPresenter from './presenter/filter-presenter.js';
+import TripApiService from './trip-api-service.js';
+import { END_POINT, AUTHORIZATION } from './const.js';
 
 const siteHeaderElement = document.querySelector('.page-header');
-const tripMainElement = siteHeaderElement.querySelector('.trip-main');
-const filtersElement = document.querySelector('.trip-main__trip-controls');
-const siteMainElement = document.querySelector('.trip-events');
+const tripEventsElement = document.querySelector('.trip-events');
+const siteHeaderTripControls = siteHeaderElement.querySelector('.trip-controls__filters');
 
-// Создаём модели
-const pointModel = new PointModel();
+const pointModel = new PointModel({
+  tripApiService: new TripApiService(END_POINT, AUTHORIZATION),
+});
 const filterModel = new FilterModel();
 
-// Создаём презентеры
 const boardPresenter = new BoardPresenter({
-  container: siteMainElement,
+  container: tripEventsElement,
   pointModel,
-  filterModel,
+  filterModel
 });
 
-const headerPresenter = new HeaderPresenter({
-  tripMainElement,
-  filtersElement,
-  onNewEventClick: () => boardPresenter.createNewEvent(),
-  pointModel,
-  filterModel,
-});
+pointModel.init()
+  .then(() => {
+    new FilterPresenter({
+      filterContainer: siteHeaderTripControls,
+      filterModel,
+      pointModel
+    }).init();
 
-// Инициализируем презентеры
-headerPresenter.init();
-boardPresenter.init();
+    boardPresenter.init();
+  })
+  .catch(() => {
+    new FilterPresenter({
+      filterContainer: siteHeaderTripControls,
+      filterModel,
+      pointModel
+    }).init();
+
+    boardPresenter.init();
+  });
 
 

@@ -1,22 +1,22 @@
+import { NoEventsMessage } from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
-import { NoEventsMessage, FilterType } from '../const.js';
 
-function createNoPointTemplate(currentFilterType) {
-  const message = NoEventsMessage[currentFilterType];
+function createNoEventPointsTemplate(currentFilter) {
+  const noEventsTextValue = NoEventsMessage[currentFilter];
   return (
-    `<p class="trip-events__msg">${message}</p>`
+    `<p class="trip-events__msg">${noEventsTextValue}</p>`
   );
 }
 
-export default class NoPointView extends AbstractView {
-  #filterType = null;
+export default class NoEventPointsView extends AbstractView {
+  #filter = null;
 
-  constructor(filterType = FilterType.EVERYTHING) {
+  constructor(filterModel) {
     super();
-    this.#filterType = filterType;
+    this.#filter = filterModel.filter;
   }
 
   get template() {
-    return createNoPointTemplate(this.#filterType);
+    return createNoEventPointsTemplate(this.#filter);
   }
 }

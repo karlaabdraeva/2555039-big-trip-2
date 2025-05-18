@@ -1,3 +1,25 @@
+export const AUTHORIZATION = 'Basic a2FybGE6MTIzNA==';
+export const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
+export const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
+};
+
+export const EndPoint = {
+  POINTS: 'points',
+  OFFERS: 'offers',
+  DESTINATIONS: 'destinations',
+};
+
+export const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
+export const MAX_POINTS_FOR_FULL_ROUTE = 3;
+
 export const EVENT_POINTS_TYPE = [
   'taxi',
   'bus',
@@ -93,4 +115,11 @@ export const BLANK_POINT = {
   isFavorite: false,
   offers: [],
   type: 'taxi',
+};
+
+export const RenderPosition = {
+  BEFOREBEGIN: 'beforebegin',
+  AFTERBEGIN: 'afterbegin',
+  BEFOREEND: 'beforeend',
+  AFTEREND: 'afterend',
 };
