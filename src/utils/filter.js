@@ -1,4 +1,5 @@
-import { FilterType, DATE_NOW } from '../const.js';
+import { FilterType, DATE_NOW, NoEventsMessage } from '../const.js';
+import dayjs from 'dayjs';
 
 export const filterEvents = {
   [FilterType.EVERYTHING]: (events) => events,
@@ -14,3 +15,25 @@ export function generateFilters(events) {
     count: filterTask(events).length,
   }));
 }
+
+export function filterEventPoints(points) {
+  const now = dayjs();
+
+  const filteredPoints = {
+    [FilterType.EVERYTHING]: points,
+    [FilterType.FUTURE]: points.filter((point) => dayjs(point.dateFrom).isAfter(now)),
+    [FilterType.PRESENT]: points.filter((point) =>
+      dayjs(point.dateFrom).isBefore(now) && dayjs(point.dateTo).isAfter(now)
+    ),
+    [FilterType.PAST]: points.filter((point) => dayjs(point.dateTo).isBefore(now))
+  };
+
+  return Object.entries(filteredPoints).map(([type, filtered]) => ({
+    type,
+    count: filtered.length,
+    placeholder: filtered.length === 0 ? NoEventsMessage[type] : null,
+    points: filtered
+  }));
+}
+
+
