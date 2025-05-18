@@ -103,6 +103,10 @@ export default class BoardPresenter {
       return;
     }
 
+    if (!this.#sortComponent) {
+      this.#renderSort();
+    }
+
     if (this.points.length === 0 && !this.#isCreatingNewPoint) {
       this.#renderNoPoints();
       return;
@@ -146,6 +150,7 @@ export default class BoardPresenter {
 
         this.#headerPresenter.init(this.#pointModel.points);
         this.#renderSort();
+        render(this.#eventListComponent, this.#container);
         this.#renderBoard();
         this.#newEventButtonComponent.addEventListener('click', this.#handleNewEventButtonClick);
         this.#toggleNewEventButton(false);
