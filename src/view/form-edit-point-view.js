@@ -233,7 +233,16 @@ export default class FormEditPointView extends AbstractStatefulView {
     }
   }
 
-  reset = (point) => this.updateElement(FormEditPointView.parsePointToState({point}));
+  reset = (point) => {
+    this.updateElement(FormEditPointView.parsePointToState({point}));
+    this.#destination = this.#pointModel.getDestinationById(point.destination);
+    this.#checkedOffers = this.#pointModel.getOffersById(point.type, point.offers);
+    this.#offers = this.#pointModel.getOffersByType(point.type);
+
+    // Обязательно повторная инициализация
+    this.#setDatepickers();
+    this._restoreHandlers();
+  };
 
   #editClickHandler = (evt) => {
     evt.preventDefault();
