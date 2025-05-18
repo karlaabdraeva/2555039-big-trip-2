@@ -239,7 +239,6 @@ export default class FormEditPointView extends AbstractStatefulView {
     this.#checkedOffers = this.#pointModel.getOffersById(point.type, point.offers);
     this.#offers = this.#pointModel.getOffersByType(point.type);
 
-    // Обязательно повторная инициализация
     this.#setDatepickers();
     this._restoreHandlers();
   };
