@@ -9,13 +9,6 @@ export const filterEvents = {
   [FilterType.PAST]: (events) => events.filter(({ dateTo }) => Date.parse(dateTo) < Date.parse(DATE_NOW)),
 };
 
-export function generateFilters(events) {
-  return Object.entries(filterEvents).map(([filterType, filterTask]) => ({
-    type: filterType,
-    count: filterTask(events).length,
-  }));
-}
-
 export function filterEventPoints(points) {
   const now = dayjs();
 

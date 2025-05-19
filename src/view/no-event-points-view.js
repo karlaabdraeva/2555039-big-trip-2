@@ -11,9 +11,9 @@ function createNoEventPointsTemplate(currentFilter) {
 export default class NoEventPointsView extends AbstractView {
   #filter = null;
 
-  constructor(filterModel) {
+  constructor(currentFilter) {
     super();
-    this.#filter = filterModel.filter;
+    this.#filter = currentFilter;
   }
 
   get template() {
