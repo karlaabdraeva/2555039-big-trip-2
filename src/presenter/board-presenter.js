@@ -1,4 +1,4 @@
-import NoPointView from '../view/no-point-view.js';
+import NoEventPointsView from '../view/no-event-points-view.js';
 import SortView from '../view/sort-view.js';
 import EventListView from '../view/event-list-view.js';
 import { render, remove, RenderPosition } from '../framework/render.js';
@@ -26,6 +26,7 @@ export default class BoardPresenter {
 
   #isLoading = true;
   #isCreatingNewPoint = false;
+  #hasError = false;
 
   #currentSortType = SortType.DAY;
   #eventPointsPresenters = new Map();
@@ -51,7 +52,7 @@ export default class BoardPresenter {
   get points() {
     const currentFilter = this.#filterModel.getFilter();
     const filtered = filterEventPoints(this.#pointModel.points);
-    const current = filtered.find((f) => f.type === currentFilter);
+    const current = filtered.find((filter) => filter.type === currentFilter);
     const filteredPoints = current ? current.points : [];
 
     switch (this.#currentSortType) {
@@ -68,7 +69,6 @@ export default class BoardPresenter {
 
   init() {
     this.#renderBoard();
-    this.#attachNewEventButton();
   }
 
   #renderPoint(point) {
@@ -93,6 +93,10 @@ export default class BoardPresenter {
   }
 
   #renderBoard() {
+    if (this.#hasError) {
+      return;
+    }
+
     if (this.#errorComponent) {
       remove(this.#errorComponent);
       this.#errorComponent = null;
@@ -103,13 +107,15 @@ export default class BoardPresenter {
       return;
     }
 
-    if (!this.#sortComponent) {
-      this.#renderSort();
+    if (this.#pointModel.points.length === 0 && !this.#isCreatingNewPoint) {
+      if (!this.#noPointComponent) {
+        this.#renderNoPoints();
+      }
+      return;
     }
 
-    if (this.points.length === 0 && !this.#isCreatingNewPoint) {
-      this.#renderNoPoints();
-      return;
+    if (!this.#sortComponent) {
+      this.#renderSort();
     }
 
     render(this.#eventListComponent, this.#container);
@@ -121,21 +127,36 @@ export default class BoardPresenter {
   }
 
   #renderNoPoints() {
-    this.#noPointComponent = new NoPointView(this.#filterModel);
+    this.#noPointComponent = new NoEventPointsView(this.#filterModel);
     render(this.#noPointComponent, this.#container);
   }
 
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.ERROR:
+        this.#hasError = true;
         this.#isLoading = false;
         remove(this.#loadingComponent);
+        remove(this.#noPointComponent);
+        remove(this.#eventListComponent);
+        remove(this.#sortComponent);
+
+        this.#clearEventPointsList();
+
+        if (this.#errorComponent) {
+          remove(this.#errorComponent);
+        }
         this.#errorComponent = new ErrorLoadView();
         render(this.#errorComponent, this.#container);
+        if (this.#newEventButtonComponent) {
+          this.#newEventButtonComponent.disabled = true;
+          this.#newEventButtonComponent.classList.add('disabled');
+        }
         break;
 
       case UpdateType.INIT:
         this.#isLoading = false;
+        this.#hasError = false;
         remove(this.#loadingComponent);
 
         if (this.#errorComponent) {
@@ -149,10 +170,7 @@ export default class BoardPresenter {
         }
 
         this.#headerPresenter.init(this.#pointModel.points);
-        this.#renderSort();
-        render(this.#eventListComponent, this.#container);
-        this.#renderBoard();
-        this.#newEventButtonComponent.addEventListener('click', this.#handleNewEventButtonClick);
+        this.#attachNewEventButton();
         this.#toggleNewEventButton(false);
         break;
 
@@ -187,7 +205,7 @@ export default class BoardPresenter {
       return;
     }
 
-    this.#eventPointsPresenters.forEach((p) => p.resetView());
+    this.#eventPointsPresenters.forEach((presenter) => presenter.resetView());
     this.#currentSortType = sortType;
     this.#clearEventPointsList();
     this.#sortComponent.element.remove();
@@ -205,7 +223,7 @@ export default class BoardPresenter {
           break;
 
         case UserAction.ADD_POINT:
-          this.#eventPointsPresenters.forEach((p) => p.setSaving());
+          this.#eventPointsPresenters.forEach((presenter) => presenter.setSaving());
           await this.#pointModel.addPoint(updateType, updatedPoint);
           this.#isCreatingNewPoint = false;
           break;
@@ -232,7 +250,7 @@ export default class BoardPresenter {
   }
 
   #clearBoard({ resetSortType = false } = {}) {
-    this.#eventPointsPresenters.forEach((p) => p.destroy());
+    this.#eventPointsPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPointsPresenters.clear();
     remove(this.#sortComponent);
     remove(this.#noPointComponent);
@@ -245,10 +263,10 @@ export default class BoardPresenter {
 
   #attachNewEventButton() {
     this.#newEventButtonComponent = document.querySelector('.trip-main__event-add-btn');
-    this.#newEventButtonComponent.addEventListener('click', this.#handleNewEventButtonClick);
+    this.#newEventButtonComponent.addEventListener('click', this.#newEventButtonClickHandler);
   }
 
-  #handleNewEventButtonClick = () => {
+  #newEventButtonClickHandler = () => {
     this.#toggleNewEventButton(true);
     this.#isCreatingNewPoint = true;
 
@@ -283,6 +301,5 @@ export default class BoardPresenter {
       this.#newEventButtonComponent.classList.toggle('disabled', isDisabled);
     }
   }
-
 }
 
