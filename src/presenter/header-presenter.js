@@ -46,7 +46,7 @@ export default class HeaderPresenter {
       };
     }
 
-    const sortedPoints = [...points].sort((a, b) => a.dateFrom - b.dateFrom);
+    const sortedPoints = [...points].sort((firstPoint, secondPoint) => firstPoint.dateFrom - secondPoint.dateFrom);
     const startDate = sortedPoints[0].dateFrom;
     const endDate = sortedPoints[sortedPoints.length - 1].dateTo;
 
